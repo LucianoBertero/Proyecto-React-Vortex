@@ -48,7 +48,6 @@ export const BoardEmployee = () => {
     setRows(employees);
   }, [employees]);
 
-  console.log(employees);
   if (employees === undefined) {
     return (
       <Typography marginTop={20} textAlign={"center"}>
@@ -123,14 +122,6 @@ export const BoardEmployee = () => {
           .toLowerCase()
           .includes(filters.name.toLowerCase())
       );
-    }
-
-    if (filters.sortDate) {
-      filteredRows.sort((a, b) => {
-        const dateA = new Date(a.HIRE_DATE);
-        const dateB = new Date(b.HIRE_DATE);
-        return filters.sortDate === "asc" ? dateA - dateB : dateB - dateA;
-      });
     }
 
     if (filters.sortSalary) {

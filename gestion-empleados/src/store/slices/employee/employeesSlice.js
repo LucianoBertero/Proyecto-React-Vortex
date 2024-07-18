@@ -19,18 +19,25 @@ export const employeesSlice = createSlice({
     employees: initialState(),
   },
   reducers: {
-    // editEmpoyee: (state /* action */) => {},
     deleteEmployeeById: (state, action) => {
       const id = action.payload;
       state.employees = state.employees.filter((emp) => emp.EMPLOYEE_ID !== id);
       localStorage.setItem("employees", JSON.stringify(state.employees));
     },
-  },
-  getEmployeeById: (state, action) => {
-    // console.log("entro por lo menos");
-    // const { id } = action.payload;
-    // return state.employees.find((emp) => emp.EMPLOYEE_ID === id);
+    updateEmployeeById: (state, action) => {
+      const { id, updatedEmployee } = action.payload;
+
+      const index = state.employees.findIndex((emp) => emp.EMPLOYEE_ID === id);
+      if (index !== -1) {
+        state.employees[index] = {
+          ...state.employees[index],
+          ...updatedEmployee,
+        };
+        localStorage.setItem("employees", JSON.stringify(state.employees));
+      }
+    },
   },
 });
 
-export const { deleteEmployeeById } = employeesSlice.actions;
+export const { deleteEmployeeById, updateEmployeeById } =
+  employeesSlice.actions;

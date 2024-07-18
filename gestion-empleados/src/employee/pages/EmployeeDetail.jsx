@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
@@ -13,28 +13,43 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
+import { updateEmployeeById } from "../../store/slices/employee/employeesSlice";
 
 export const EmployeeDetail = () => {
+  const dispatch = useDispatch();
   const { employees } = useSelector((state) => state.employees);
   const navigate = useNavigate();
   const { id } = useParams();
   const numericId = parseInt(id);
 
-  let employee = null;
-
-  for (let i = 0; i < employees.length; i++) {
-    if (employees[i].EMPLOYEE_ID === numericId) {
-      employee = employees[i];
-      break;
-    }
-  }
-
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
 
+  // let employee = null;
+
+  // for (let i = 0; i < employees.length; i++) {
+  //   if (employees[i].EMPLOYEE_ID === numericId) {
+  //     employee = employees[i];
+  //     break;
+  //   }
+  // }
+
+  //Encontrar el empleado por el id
+  const employee = employees.find((emp) => emp.EMPLOYEE_ID === numericId);
+
+  useEffect(() => {
+    if (!employee) {
+      console.log("Employee not found, redirecting...");
+      navigate("/employee/list", { replace: true });
+    }
+  }, [employee, navigate]);
+
+  if (!employee) {
+    return null;
+  }
   const { control, handleSubmit, setValue, formState } = useForm({
     defaultValues: {
       firstName: employee?.FIRST_NAME || "",
@@ -47,14 +62,51 @@ export const EmployeeDetail = () => {
   });
 
   const onSubmit = (data) => {
-    console.log(data); // Muestra los datos actualizados en la consola
-    console.log(formState.touchedFields);
-    if (Object.keys(formState.touchedFields).length !== 0) {
-      console.log("no se ha tocado ningún campo");
+    if (Object.keys(formState.dirtyFields).length === 0) {
     } else {
-      console.log("al menos un campo ha sido tocado");
+      Swal.fire({
+        title: `¿Está seguro que desea modificar a ${employee.FIRST_NAME} ${employee.LAST_NAME}?`,
+
+        showCancelButton: true,
+        confirmButtonText: "Confirmar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          //LOGIC TO DELETE EMPLOYEE
+
+          const { EMPLOYEE_ID } = employee;
+
+          //castear el objeto
+          const castEmployee = {
+            FIRST_NAME: data.firstName,
+            LAST_NAME: data.lastName,
+            EMAIL: data.email,
+            PHONE_NUMBER: data.phoneNumber,
+            HIRE_DATE: data.hireDate,
+            SALARY: data.salary,
+          };
+
+          dispatch(
+            updateEmployeeById({
+              id: EMPLOYEE_ID,
+              updatedEmployee: castEmployee,
+            })
+          );
+
+          Swal.fire("Modificado!", "", "success");
+          navigate("/employee/list");
+        } else {
+          console.log("Enbtra");
+
+          Swal.fire("No se realizaron cambios", "", "info");
+          navigate(`/employee/detail/6`, {
+            replace: true,
+          });
+        }
+      });
     }
   };
+  //TODO: Redirect to list if employee is null
+  console.log("🚀 ~ EmployeeDetail ~ employee:", employee);
 
   return (
     <>
@@ -250,10 +302,13 @@ export const EmployeeDetail = () => {
                           Volver
                         </Button>
                         <Button
-                          type="submit" // Añadido para enviar el formulario
+                          type="submit"
                           variant="contained"
                           color="secondary"
                           sx={{ mr: 2 }}
+                          disabled={
+                            !(Object.keys(formState.dirtyFields).length !== 0)
+                          }
                         >
                           Modificar
                         </Button>
