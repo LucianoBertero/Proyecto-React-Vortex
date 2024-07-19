@@ -47,6 +47,7 @@ export const EmployeeDetail = () => {
     }
   }, [employee, navigate]);
 
+  console.log(employee);
   if (!employee) {
     return null;
   }
@@ -58,6 +59,10 @@ export const EmployeeDetail = () => {
       phoneNumber: employee?.PHONE_NUMBER || "",
       hireDate: employee?.HIRE_DATE || "",
       salary: employee?.SALARY || "",
+      birdCity: employee?.BIRTH_CITY || "",
+      departament: employee?.DEPARTMENT || "",
+      position: employee?.POSITION || "",
+      supervisor: employee?.SUPERVISOR || "",
     },
   });
 
@@ -83,6 +88,10 @@ export const EmployeeDetail = () => {
             PHONE_NUMBER: data.phoneNumber,
             HIRE_DATE: data.hireDate,
             SALARY: data.salary,
+            BIRTH_CITY: data.birdCity,
+            DEPARTMENT: data.departament,
+            POSITION: data.position,
+            SUPERVISOR: data.supervisor,
           };
 
           dispatch(
@@ -277,6 +286,95 @@ export const EmployeeDetail = () => {
                           variant="outlined"
                           size="small"
                           placeholder="Editar salario"
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      Lugar de nacimiento:
+                    </Typography>
+                    <Controller
+                      name="birdCity"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          type="text" // Cambiado a type date
+                          variant="outlined"
+                          size="small"
+                          placeholder="Editar lugar de nacimiento"
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      Departamento:
+                    </Typography>
+                    <Controller
+                      name="departament"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          variant="outlined"
+                          size="small"
+                          placeholder="Editar departamento"
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      Posicion:
+                    </Typography>
+                    <Controller
+                      name="position"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          variant="outlined"
+                          size="small"
+                          placeholder="Editar Posicion"
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      variant="subtitle1"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      Supervisor:
+                    </Typography>
+                    <Controller
+                      name="supervisor"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          variant="outlined"
+                          size="small"
+                          placeholder="Editar Supervisor"
                           fullWidth
                         />
                       )}

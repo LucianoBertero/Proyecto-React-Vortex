@@ -144,8 +144,7 @@ export const BoardEmployee = () => {
         handleFilterByName={handleFilterByName}
         handleSortBySalary={handleSortBySalary}
         handleClearFilters={handleClearFilters}
-      />
-
+      />{" "}
       <Box
         sx={{
           display: "flex",
@@ -195,7 +194,6 @@ export const BoardEmployee = () => {
                                     gap: 2,
                                   }}
                                 >
-                                  <Button variant="contained">Editar</Button>
                                   <Button
                                     onClick={() => onDeleteEmployee(row)}
                                     variant="contained"
@@ -207,7 +205,7 @@ export const BoardEmployee = () => {
                                     variant="contained"
                                     onClick={() => viewEmployeeDetail(row)}
                                   >
-                                    Ver mas
+                                    Ver mas / Editar
                                   </Button>
                                 </Box>
                               ) : (

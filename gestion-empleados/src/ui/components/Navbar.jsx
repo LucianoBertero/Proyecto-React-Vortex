@@ -6,11 +6,13 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 
+import { Link } from "@mui/material";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import { useNavigate } from "react-router-dom";
 
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
@@ -23,6 +25,11 @@ export const Navbar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/employee/list");
   };
 
   return (
@@ -46,17 +53,31 @@ export const Navbar = () => {
                 textAlign: "center",
               }}
             >
-              <Typography
-                variant="h6"
-                component="div"
+              <Link
+                component="button"
+                variant="body2"
+                onClick={handleClick}
                 sx={{
-                  flexGrow: 1,
-                  ml: { xs: 0, md: -30 }, // Adjust margin-left for different screen sizes
-                  display: { xs: "none", md: "block" }, // Hide on small screens
+                  textDecoration: "none",
+                  color: "inherit",
+                  "&:hover": {
+                    cursor: "pointer",
+                    color: "primary.main",
+                  },
                 }}
               >
-                Gestión de Empleados
-              </Typography>
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{
+                    flexGrow: 1,
+                    ml: { xs: 0, md: -30 },
+                    display: { xs: "none", md: "block" },
+                  }}
+                >
+                  Gestión de Empleados
+                </Typography>
+              </Link>
             </Box>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">

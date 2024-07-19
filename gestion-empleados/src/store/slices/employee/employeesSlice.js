@@ -36,6 +36,15 @@ export const employeesSlice = createSlice({
         localStorage.setItem("employees", JSON.stringify(state.employees));
       }
     },
+    addEmployee: (state, action) => {
+      const lastId =
+        state.employees.length > 0
+          ? Math.max(...state.employees.map((employee) => employee.EMPLOYEE_ID))
+          : 0;
+      const newEmployee = { ...action.payload, EMPLOYEE_ID: lastId + 1 };
+      state.employees.push(newEmployee);
+      localStorage.setItem("employees", JSON.stringify(state.employees));
+    },
   },
 });
 
