@@ -10,9 +10,12 @@ import {
   Button,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const EmployeeModal = ({ open, handleClose }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -21,7 +24,6 @@ const EmployeeModal = ({ open, handleClose }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
     const castEmployee = {
       FIRST_NAME: data.firstName,
       LAST_NAME: data.lastName,
@@ -40,8 +42,17 @@ const EmployeeModal = ({ open, handleClose }) => {
       payload: castEmployee,
     });
 
-    reset();
     handleClose();
+
+    Swal.fire({
+      title: "Empleado agregado",
+      text: "El empleado ha sido agregado con éxito.",
+      icon: "success",
+      confirmButtonText: "Aceptar",
+    }).then(() => {
+      navigate("/employee/list");
+    });
+    reset();
   };
 
   return (

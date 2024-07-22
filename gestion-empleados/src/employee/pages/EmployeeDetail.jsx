@@ -20,6 +20,7 @@ import { updateEmployeeById } from "../../store/slices/employee/employeesSlice";
 export const EmployeeDetail = () => {
   const dispatch = useDispatch();
   const { employees } = useSelector((state) => state.employees);
+
   const navigate = useNavigate();
   const { id } = useParams();
   const numericId = parseInt(id);
@@ -28,30 +29,19 @@ export const EmployeeDetail = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  // let employee = null;
-
-  // for (let i = 0; i < employees.length; i++) {
-  //   if (employees[i].EMPLOYEE_ID === numericId) {
-  //     employee = employees[i];
-  //     break;
-  //   }
-  // }
-
   //Encontrar el empleado por el id
   const employee = employees.find((emp) => emp.EMPLOYEE_ID === numericId);
 
   useEffect(() => {
     if (!employee) {
-      console.log("Employee not found, redirecting...");
       navigate("/employee/list", { replace: true });
     }
   }, [employee, navigate]);
 
-  console.log(employee);
   if (!employee) {
     return null;
   }
-  const { control, handleSubmit, setValue, formState } = useForm({
+  const { control, handleSubmit, setValue, reset, formState } = useForm({
     defaultValues: {
       firstName: employee?.FIRST_NAME || "",
       lastName: employee?.LAST_NAME || "",
@@ -104,18 +94,32 @@ export const EmployeeDetail = () => {
           Swal.fire("Modificado!", "", "success");
           navigate("/employee/list");
         } else {
-          console.log("Enbtra");
+          Swal.fire({
+            title: "No se realizaron cambios",
+            icon: "info",
 
-          Swal.fire("No se realizaron cambios", "", "info");
-          navigate(`/employee/detail/6`, {
-            replace: true,
+            showConfirmButton: false,
+            timer: 1000,
+          }).then(() => {
+            // Restore form to the employee's original values
+            reset({
+              firstName: employee.FIRST_NAME || "",
+              lastName: employee.LAST_NAME || "",
+              email: employee.EMAIL || "",
+              phoneNumber: employee.PHONE_NUMBER || "",
+              hireDate: employee.HIRE_DATE || "",
+              salary: employee.SALARY || "",
+              birthCity: employee.BIRTH_CITY || "",
+              department: employee.DEPARTMENT || "",
+              position: employee.POSITION || "",
+              supervisor: employee.SUPERVISOR || "",
+            });
           });
         }
       });
     }
   };
   //TODO: Redirect to list if employee is null
-  console.log("🚀 ~ EmployeeDetail ~ employee:", employee);
 
   return (
     <>
@@ -191,13 +195,18 @@ export const EmployeeDetail = () => {
                     <Controller
                       name="lastName"
                       control={control}
-                      render={({ field }) => (
+                      rules={{ required: "El apellido es obligatorio" }} // Regla de validación
+                      render={({ field, fieldState }) => (
                         <TextField
                           {...field}
                           variant="outlined"
                           size="small"
                           placeholder="Editar apellido"
                           fullWidth
+                          error={!!fieldState.error}
+                          helperText={
+                            fieldState.error ? fieldState.error.message : ""
+                          }
                         />
                       )}
                     />
@@ -238,7 +247,6 @@ export const EmployeeDetail = () => {
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          variant="outlined"
                           size="small"
                           placeholder="Editar número de teléfono"
                           fullWidth
@@ -285,6 +293,7 @@ export const EmployeeDetail = () => {
                           {...field}
                           variant="outlined"
                           size="small"
+                          type="number"
                           placeholder="Editar salario"
                           fullWidth
                         />

@@ -9,7 +9,6 @@ export const AppRouter = () => {
           path="/employee/*"
           element={<EmployeeRoutes></EmployeeRoutes>}
         ></Route>
-
         <Route path="/*" element=<Navigate to="/employee"></Navigate>></Route>
       </Routes>
     </>

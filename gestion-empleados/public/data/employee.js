@@ -8,7 +8,7 @@ export const employeeDb = [
     HIRE_DATE: "2020-01-15",
     SALARY: 50000,
     BIRTH_CITY: "New York",
-    DEPARTMENT: "IT",
+    DEPARTMENT: "",
     POSITION: "Software Engineer",
     SUPERVISOR: "Liam Thomas",
   },

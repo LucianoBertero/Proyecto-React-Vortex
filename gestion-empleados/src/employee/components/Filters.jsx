@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Grid,
   TextField,
@@ -8,13 +8,11 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-
 import { green } from "@mui/material/colors";
 import EmployeeModal from "./EmployeeModal";
 
 const Filters = ({
   handleFilterByName,
-
   handleSortBySalary,
   handleClearFilters,
 }) => {
@@ -37,8 +35,8 @@ const Filters = ({
   };
 
   //Modal
-  const [open, setOpen] = useState(false);
 
+  const [open, setOpen] = useState(false);
   // Función para abrir el modal
   const handleClickOpen = () => {
     setOpen(true);
