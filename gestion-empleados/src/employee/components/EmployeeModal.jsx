@@ -50,9 +50,23 @@ const EmployeeModal = ({ open, handleClose }) => {
       icon: "success",
       confirmButtonText: "Aceptar",
     }).then(() => {
+      reset(
+        (defaultValues = {
+          salary: 0,
+          phoneNumber: 0,
+          birthCity: "",
+          department: "",
+          position: "",
+          supervisor: "",
+        })
+      );
       navigate("/employee/list");
     });
+  };
+
+  const handleCloseAndReset = () => {
     reset();
+    handleClose();
   };
 
   return (
@@ -169,7 +183,7 @@ const EmployeeModal = ({ open, handleClose }) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={handleCloseAndReset}>Cancelar</Button>
           <Button type="submit">Guardar</Button>
         </DialogActions>
       </form>
