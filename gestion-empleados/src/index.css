@@ -1,3 +1,6 @@
 .container {
   /* Ajusta el padding según sea necesario */
 }
+.border-radius {
+  border: 100px solid red;
+}
