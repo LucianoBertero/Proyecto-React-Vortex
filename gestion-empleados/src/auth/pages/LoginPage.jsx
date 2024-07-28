@@ -1,6 +1,7 @@
 import React from "react";
 import { LoginForm } from "../components/LoginForm";
 import { Box, Grid, useTheme, useMediaQuery } from "@mui/material";
+import LogoVortex from "../components/Logo";
 
 export const LoginPage = () => {
   const theme = useTheme();
@@ -36,7 +37,7 @@ export const LoginPage = () => {
             alt="Imagen de fondo"
           />
           {/* Imagen centrada */}
-          <img
+          {/* <img
             src="https://vortex-it.com/wp-content/uploads/2022/04/LOGO-VORTEX-PNG@4x-230x35.png"
             style={{
               position: "absolute",
@@ -47,7 +48,8 @@ export const LoginPage = () => {
               width: "auto",
             }}
             alt="Vortex"
-          />
+          /> */}
+          <LogoVortex></LogoVortex>
         </Grid>
         <Grid
           item
