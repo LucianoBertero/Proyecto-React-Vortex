@@ -15,10 +15,10 @@ export const RemoveModal = ({ employee, onConfirm, onDeny }) => {
       denyButtonText: `Volver`,
     }).then((result) => {
       if (result.isConfirmed) {
-        onConfirm(); // Llama a la función onConfirm pasada desde el padre
+        onConfirm();
         Swal.fire("Eliminado!", "", "success");
       } else if (result.isDenied) {
-        onDeny(); // Llama a la función onDeny pasada desde el padre
+        onDeny();
         Swal.fire("No se realizaron cambios", "", "info");
       }
     });
