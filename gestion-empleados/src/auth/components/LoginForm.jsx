@@ -11,11 +11,15 @@ import {
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-export const LoginForm = () => {
-  const { register, handleSubmit } = useForm();
+export const LoginForm = ({ onLoginSubmit }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    onLoginSubmit(data.username, data.password);
   };
 
   return (
@@ -39,14 +43,18 @@ export const LoginForm = () => {
         label="Usuario/Email"
         variant="outlined"
         fullWidth
-        {...register("username")}
+        {...register("username", { required: "Este campo es obligatorio" })}
+        error={!!errors.username}
+        helperText={errors.username?.message}
       />
       <TextField
         label="Contraseña"
         type="password"
         variant="outlined"
         fullWidth
-        {...register("password")}
+        {...register("password", { required: "Este campo es obligatorio" })}
+        error={!!errors.password}
+        helperText={errors.password?.message}
       />
       <FormControlLabel
         control={<Checkbox {...register("rememberMe")} />}

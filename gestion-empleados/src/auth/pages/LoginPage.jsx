@@ -1,14 +1,40 @@
 import React from "react";
 import { LoginForm } from "../components/LoginForm";
-import { Box, Grid, useTheme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Grid,
+  useTheme,
+  useMediaQuery,
+  CircularProgress,
+} from "@mui/material";
 import LogoVortex from "../components/Logo";
+import { useLogin } from "../../hooks/useLogin";
 
 export const LoginPage = () => {
+  const { isLoading, handleSubmit } = useLogin();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", overflow: "hidden" }}>
+      {isLoading && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 9999,
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
       <Grid container sx={{ flexGrow: 1 }}>
         <Grid
           item
@@ -23,7 +49,6 @@ export const LoginPage = () => {
           }}
           className="pattern-cross-dots-sm"
         >
-          {/* Imagen de fondo */}
           <img
             src="../../../public/assets/pngegg3.png"
             style={{
@@ -36,20 +61,7 @@ export const LoginPage = () => {
             }}
             alt="Imagen de fondo"
           />
-          {/* Imagen centrada */}
-          {/* <img
-            src="https://vortex-it.com/wp-content/uploads/2022/04/LOGO-VORTEX-PNG@4x-230x35.png"
-            style={{
-              position: "absolute",
-              top: "40%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              height: "80px",
-              width: "auto",
-            }}
-            alt="Vortex"
-          /> */}
-          <LogoVortex></LogoVortex>
+          <LogoVortex />
         </Grid>
         <Grid
           item
@@ -60,11 +72,11 @@ export const LoginPage = () => {
             justifyContent: "center",
             alignItems: "flex-start",
             backgroundColor: "white",
-            paddingTop: 8, // Ajustar el valor para posicionar más arriba
+            paddingTop: 8,
             minHeight: "100vh",
           }}
         >
-          <LoginForm />
+          <LoginForm onLoginSubmit={handleSubmit} />
         </Grid>
       </Grid>
     </Box>

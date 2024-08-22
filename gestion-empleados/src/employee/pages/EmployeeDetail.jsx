@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import axios from "axios";
 import {
   Box,
   Button,
@@ -20,10 +21,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { updateEmployeeById } from "../../store/slices/employee/employeesSlice";
+import { useState } from "react";
 
 export const EmployeeDetail = () => {
+  const [loading, setLoading] = useState(true);
+  const { control, setValue, formState, handleSubmit } = useForm();
   const dispatch = useDispatch();
-  const { employees } = useSelector((state) => state.employees);
+  let employee = {};
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -34,96 +38,86 @@ export const EmployeeDetail = () => {
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   //Encontrar el empleado por el id
-  const employee = employees.find((emp) => emp.EMPLOYEE_ID === numericId);
 
   useEffect(() => {
-    if (!employee) {
-      navigate("/employee/list", { replace: true });
-    }
-  }, [employee, navigate]);
+    const fetchEmployee = async () => {
+      try {
+        const token = localStorage.getItem("authToken"); // Reemplaza esto con tu lógica para obtener el token
+        const response = await axios.get(
+          `http://localhost:3000/employee/${id}`,
+          {
+            headers: {
+              "x-token": token,
+            },
+          }
+        );
+        const employeeData = response.data.employee; // Asegúrate de que la respuesta tenga la estructura correcta
+        // Establecer los valores en el formulario
+        setValue("firstName", employeeData.firstName);
+        setValue("id", employeeData._id);
+        setValue("lastName", employeeData.lastName);
+        setValue("email", employeeData.email);
+        setValue("phoneNumber", employeeData.phoneNumber);
+        setValue("hireDate", employeeData.hireDate.split("T")[0]);
+        setValue("salary", employeeData.salary);
+        setValue("birdCity", employeeData.birthCity);
+        setValue("departament", employeeData.department);
+        setValue("position", employeeData.position.name);
+        setValue("supervisor", employeeData.supervisor);
+      } catch (error) {
+        console.error("Error al obtener el empleado:", error);
+        navigate("/employee/list", { replace: true });
+      } finally {
+        setLoading(false); // Cambiar el estado de carga a false
+      }
+    };
 
-  if (!employee) {
-    return null;
-  }
-  const { control, handleSubmit, setValue, reset, formState } = useForm({
-    defaultValues: {
-      firstName: employee?.FIRST_NAME || "",
-      lastName: employee?.LAST_NAME || "",
-      email: employee?.EMAIL || "",
-      phoneNumber: employee?.PHONE_NUMBER || "",
-      hireDate: employee?.HIRE_DATE || "",
-      salary: employee?.SALARY || "",
-      birdCity: employee?.BIRTH_CITY || "",
-      departament: employee?.DEPARTMENT || "",
-      position: employee?.POSITION || "",
-      supervisor: employee?.SUPERVISOR || "",
-    },
-  });
+    fetchEmployee();
+  }, [numericId, navigate, setValue]);
 
   const onSubmit = (data) => {
     if (Object.keys(formState.dirtyFields).length === 0) {
     } else {
       Swal.fire({
         title: `¿Está seguro que desea modificar a ${employee.FIRST_NAME} ${employee.LAST_NAME}?`,
-
         showCancelButton: true,
         confirmButtonText: "Confirmar",
-      }).then((result) => {
+      }).then(async (result) => {
+        // Cambiado a async
         if (result.isConfirmed) {
-          //LOGIC TO DELETE EMPLOYEE
+          const token = localStorage.getItem("authToken"); // Obtener el token
 
-          const { EMPLOYEE_ID } = employee;
-
+          console.log(data.id);
+          console.log(data);
           //castear el objeto
-          const castEmployee = {
-            FIRST_NAME: data.firstName,
-            LAST_NAME: data.lastName,
-            EMAIL: data.email,
-            PHONE_NUMBER: data.phoneNumber,
-            HIRE_DATE: data.hireDate,
-            SALARY: data.salary,
-            BIRTH_CITY: data.birdCity,
-            DEPARTMENT: data.departament,
-            POSITION: data.position,
-            SUPERVISOR: data.supervisor,
-          };
 
-          dispatch(
-            updateEmployeeById({
-              id: EMPLOYEE_ID,
-              updatedEmployee: castEmployee,
-            })
-          );
+          try {
+            await axios.put(
+              `http://localhost:3000/employee/updateEmployee/${data.id}`,
+              data,
+              {
+                headers: {
+                  "x-token": token,
+                },
+              }
+            );
 
-          Swal.fire("Modificado!", "", "success");
-          navigate("/employee/list");
+            Swal.fire("Modificado!", "", "success");
+            navigate("/employee/list");
+          } catch (error) {
+            console.error("Error al modificar el empleado:", error);
+            Swal.fire("Error!", "No se pudo modificar el empleado.", "error");
+          }
         } else {
-          Swal.fire({
-            title: "No se realizaron cambios",
-            icon: "info",
-
-            showConfirmButton: false,
-            timer: 1000,
-          }).then(() => {
-            // Restore form to the employee's original values
-            reset({
-              firstName: employee.FIRST_NAME || "",
-              lastName: employee.LAST_NAME || "",
-              email: employee.EMAIL || "",
-              phoneNumber: employee.PHONE_NUMBER || "",
-              hireDate: employee.HIRE_DATE || "",
-              salary: employee.SALARY || "",
-              birthCity: employee.BIRTH_CITY || "",
-              department: employee.DEPARTMENT || "",
-              position: employee.POSITION || "",
-              supervisor: employee.SUPERVISOR || "",
-            });
-          });
+          // ... código existente para manejar la cancelación ...
         }
       });
     }
   };
-  //TODO: Redirect to list if employee is null
+
+  if (loading) {
+    return <div>Cargando...</div>; // Muestra un mensaje de carga
+  }
 
   return (
     <>
@@ -151,7 +145,7 @@ export const EmployeeDetail = () => {
                 marginBottom: { xs: 2, md: 0 },
               }}
               image="/assets/dc-superman.jpg"
-              alt={`${employee?.FIRST_NAME} ${employee?.LAST_NAME}`}
+              alt={`${employee?.firstName} ${employee?.LAST_NAME}`}
             />
           )}
           <Box
@@ -164,6 +158,10 @@ export const EmployeeDetail = () => {
             }}
           >
             <CardContent sx={{ width: "100%" }}>
+              {/* <form onSubmit={handleSubmit(onSubmit)}>
+              <form onSubmit={handleSubmit(onSubmit)}>
+               */}
+
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={6}>

@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import { green } from "@mui/material/colors";
 import EmployeeModal from "./EmployeeModal";
+import { useEffect } from "react";
+import axios from "axios";
 
 const Filters = ({
   handleFilterByName,
@@ -18,6 +20,27 @@ const Filters = ({
 }) => {
   const [nameFilter, setNameFilter] = useState("");
   const [salarySort, setSalarySort] = useState("");
+  const [position, setPosition] = useState([]);
+
+  console.log("hola");
+
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await axios.get(`http://localhost:3000/position`, {
+          headers: {
+            "x-token": token,
+          },
+        });
+        setPosition(response.data.positions);
+        console.log(position + "dasdasdasd");
+        console.log(response);
+      } catch (error) {}
+    };
+    fetchPositions();
+  }, []);
+
   const handleNameChange = (e) => {
     setNameFilter(e.target.value);
     handleFilterByName(e.target.value);
@@ -51,38 +74,52 @@ const Filters = ({
     <>
       <Grid
         container
-        spacing={1} // Reduce el espacio entre los elementos
+        spacing={1}
         alignItems="center"
         justifyContent="center"
         marginBottom={2}
         minWidth={50}
         sx={{ maxWidth: "100%" }}
       >
-        <Grid item xs={12} sm={4} md={4}>
+        <Grid item xs={12} sm={3} md={3}>
           <TextField
             variant="outlined"
             size="small"
-            placeholder="Buscar por nombre o apellido"
+            placeholder="Buscar por nombre "
             sx={{ width: "100%" }}
             value={nameFilter}
             onChange={handleNameChange}
           />
         </Grid>
 
-        <Grid item xs={6} sm={3} md={2}>
-          <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel>Ordenar por salario</InputLabel>
+        <Grid item xs={12} sm={3} md={3}>
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Nombre Supervisor"
+            sx={{ width: "100%" }}
+            value={nameFilter}
+            onChange={handleNameChange}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={3} md={3}>
+          <FormControl variant="outlined" size="small" sx={{ width: "100%" }}>
+            <InputLabel>Seleccionar posicion</InputLabel>
             <Select
-              value={salarySort}
-              onChange={handleSalaryChange}
-              label="Ordenar por salario"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+              label="Seleccionar Posicion"
             >
-              <MenuItem value="">Seleccione</MenuItem>
-              <MenuItem value="asc">Ascendente</MenuItem>
-              <MenuItem value="desc">Descendente</MenuItem>
+              {position.map((pos) => (
+                <MenuItem key={pos.id} value={pos.name}>
+                  {pos.name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={6} sm={3} md={2}>
           <Button variant="contained" color="secondary" onClick={handleClear}>
             Limpiar Filtros

@@ -10,15 +10,13 @@ import {
   Box,
   Button,
 } from "@mui/material";
-
 const columns = [
-  { id: "EMPLOYEE_ID", label: "ID", minWidth: 10 },
-  { id: "FIRST_NAME", label: "Nombre", minWidth: 20 },
-  { id: "LAST_NAME", label: "Apellido", minWidth: 20 },
-  { id: "EMAIL", label: "Email", minWidth: 70 },
-  { id: "PHONE_NUMBER", label: "Teléfono", minWidth: 70 },
-  { id: "HIRE_DATE", label: "Fecha de Contratación", minWidth: 70 },
-  { id: "SALARY", label: "Salario", minWidth: 70 },
+  { id: "firstName", label: "Nombre", minWidth: 10 },
+  { id: "lastName", label: "Apellido", minWidth: 20 },
+  { id: "email", label: "Email", minWidth: 20 },
+  { id: "position", label: "Posición", minWidth: 20 }, // Añadir columna para posición
+  { id: "isDeleted", label: "Status", minWidth: 10 }, // Añadir columna para posición
+
   { id: "actions", label: "Acciones", minWidth: 150, align: "center" },
 ];
 
@@ -31,6 +29,7 @@ const EmployeeTable = ({
   onDeleteEmployee,
   viewEmployeeDetail,
 }) => {
+  console.log(rows);
   return (
     <Paper sx={{ width: "85%" }}>
       <TableContainer sx={{ maxHeight: "100%" }}>
@@ -52,17 +51,31 @@ const EmployeeTable = ({
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  tabIndex={-1}
-                  key={row.EMPLOYEE_ID}
-                >
+                <TableRow hover role="checkbox" tabIndex={-1} key={row._id}>
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.id === "actions" ? (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        sx={{
+                          color:
+                            column.id === "isDeleted"
+                              ? value
+                                ? "red"
+                                : "green"
+                              : "inherit", // Colores para isDeleted
+                        }}
+                      >
+                        {column.id === "position" ? ( // Acceder al nombre de la posición
+                          row.position.name
+                        ) : column.id === "isDeleted" ? ( // Mostrar el valor de isDeleted
+                          value ? (
+                            "DeBaja"
+                          ) : (
+                            "Activo"
+                          )
+                        ) : column.id === "actions" ? (
                           <Box
                             sx={{
                               display: "flex",
@@ -71,7 +84,7 @@ const EmployeeTable = ({
                             }}
                           >
                             <Button
-                              onClick={() => onDeleteEmployee(row)}
+                              onClick={() => onDeleteEmployee(row._id)}
                               variant="contained"
                               color="error"
                             >
@@ -79,9 +92,9 @@ const EmployeeTable = ({
                             </Button>
                             <Button
                               variant="contained"
-                              onClick={() => viewEmployeeDetail(row)}
+                              onClick={() => viewEmployeeDetail(row._id)}
                             >
-                              Ver mas / Editar
+                              Ver más / Editar
                             </Button>
                           </Box>
                         ) : (
@@ -107,5 +120,4 @@ const EmployeeTable = ({
     </Paper>
   );
 };
-
 export default EmployeeTable;

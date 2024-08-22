@@ -4,17 +4,20 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EmployeeTable from "./EmployeeTable";
 import Filters from "./Filters";
-import { deleteEmployeeById } from "../../store/slices/employee/employeesSlice";
+import { deleteEmployeeById } from "../../store/slices/employee/employeeThunks";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { fetchEmployees } from "../../store/slices/employee/employeeThunks";
 
 export const BoardEmployee = () => {
-  const { employees } = useSelector((state) => state.employees);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const employees = useSelector((state) => state.employees.employees);
+  const status = useSelector((state) => state.employees.status);
+  const error = useSelector((state) => state.employees.error);
+
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const dispatch = useDispatch();
-
-  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     name: "",
     sortDate: "",
@@ -22,10 +25,30 @@ export const BoardEmployee = () => {
   });
 
   useEffect(() => {
+    dispatch(fetchEmployees()); // Llama al thunk para obtener empleados
+  }, [dispatch]);
+
+  useEffect(() => {
     setRows(employees);
   }, [employees]);
 
-  if (employees === undefined || employees.length === 0 || employees === null) {
+  if (status === "loading") {
+    return (
+      <Typography marginTop={20} textAlign={"center"}>
+        Cargando...
+      </Typography>
+    );
+  }
+
+  if (status === "failed") {
+    return (
+      <Typography marginTop={20} textAlign={"center"}>
+        Error: {error}
+      </Typography>
+    );
+  }
+
+  if (employees.length === 0) {
     return (
       <Typography marginTop={20} textAlign={"center"}>
         No hay empleados registrados
@@ -44,14 +67,13 @@ export const BoardEmployee = () => {
 
   const onDeleteEmployee = (employee) => {
     Swal.fire({
-      title: `¿Está seguro que desea eliminar a ${employee.FIRST_NAME} ${employee.LAST_NAME}?`,
-
+      title: `¿Está seguro que desea eliminar a ${employee.firstName} ${employee.lastName}?`,
       showCancelButton: true,
       confirmButtonText: "Confirmar",
     }).then((result) => {
       if (result.isConfirmed) {
-        const { EMPLOYEE_ID } = employee;
-        dispatch(deleteEmployeeById(EMPLOYEE_ID));
+        dispatch(deleteEmployeeById(employee));
+        dispatch(fetchEmployees());
         Swal.fire("Eliminado!", "", "success");
       } else if (result.isDenied) {
         Swal.fire("No se realizaron cambios", "", "info");
@@ -60,11 +82,11 @@ export const BoardEmployee = () => {
   };
 
   const viewEmployeeDetail = (row) => {
-    navigate(`/employee/detail/${row.EMPLOYEE_ID}`, { replace: true });
+    console.log(row);
+    navigate(`/employee/detail/${row}`, { replace: true });
   };
 
-  //FILTROS
-
+  // FILTROS
   const handleFilterByName = (value) => {
     setFilters({ ...filters, name: value });
   };
@@ -81,37 +103,38 @@ export const BoardEmployee = () => {
     });
   };
 
-  useEffect(() => {
-    filterAndSortRows();
-  }, [filters]);
+  // useEffect(() => {
+  //   filterAndSortRows();
+  // }, [filters]);
 
-  const filterAndSortRows = () => {
-    let filteredRows = [...employees];
+  // const filterAndSortRows = () => {
+  //   let filteredRows = [...employees];
 
-    if (filters.name) {
-      filteredRows = filteredRows.filter((employee) =>
-        `${employee.FIRST_NAME} ${employee.LAST_NAME}`
-          .toLowerCase()
-          .includes(filters.name.toLowerCase())
-      );
-    }
+  //   if (filters.name) {
+  //     filteredRows = filteredRows.filter((employee) =>
+  //       `${employee.firstName} ${employee.lastName}`
+  //         .toLowerCase()
+  //         .includes(filters.name.toLowerCase())
+  //     );
+  //   }
 
-    if (filters.sortSalary) {
-      filteredRows.sort((a, b) => {
-        return filters.sortSalary === "asc"
-          ? a.SALARY - b.SALARY
-          : b.SALARY - a.SALARY;
-      });
-    }
+  //   if (filters.sortSalary) {
+  //     filteredRows.sort((a, b) => {
+  //       return filters.sortSalary === "asc"
+  //         ? a.salary - b.salary
+  //         : b.salary - a.salary;
+  //     });
+  //   }
 
-    setRows(filteredRows);
-  };
+  //   setRows(filteredRows);
+  // };
+
   return (
     <>
-      <br></br>
-      <br></br>
-      <br></br>
-      <br></br>
+      <br />
+      <br />
+      <br />
+      <br />
       <Filters
         handleFilterByName={handleFilterByName}
         handleSortBySalary={handleSortBySalary}

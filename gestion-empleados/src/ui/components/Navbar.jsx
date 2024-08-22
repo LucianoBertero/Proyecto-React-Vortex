@@ -25,8 +25,8 @@ export const Navbar = () => {
 
   const handleCloseUserMenu = (setting) => {
     setAnchorElUser(null);
-    console.log(setting);
     if (setting === "Salir") {
+      localStorage.removeItem("authToken");
       navigate("/auth/login/");
     }
   };
