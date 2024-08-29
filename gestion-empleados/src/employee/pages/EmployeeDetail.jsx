@@ -15,6 +15,7 @@ import {
   TextField,
   Typography,
   useMediaQuery,
+  CircularProgress,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate, useParams } from "react-router-dom";
@@ -116,7 +117,24 @@ export const EmployeeDetail = () => {
   };
 
   if (loading) {
-    return <div>Cargando...</div>; // Muestra un mensaje de carga
+    return (
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 9999,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    ); // Muestra un mensaje de carga
   }
 
   return (

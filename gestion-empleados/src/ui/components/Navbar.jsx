@@ -14,7 +14,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 
-const settings = ["Perfil", "Salir"];
+const settings = ["Perfil", "Salir", "Usuarios", "Posiciones"];
 
 export const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -28,6 +28,14 @@ export const Navbar = () => {
     if (setting === "Salir") {
       localStorage.removeItem("authToken");
       navigate("/auth/login/");
+    }
+
+    if (setting === "Usuarios") {
+      navigate("/employee/users");
+    }
+    if (setting === "Posiciones") {
+      localStorage.removeItem("authToken");
+      navigate("/employee/positions");
     }
   };
   const navigate = useNavigate();

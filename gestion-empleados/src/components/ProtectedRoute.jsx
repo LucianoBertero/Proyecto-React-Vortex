@@ -7,3 +7,7 @@ const isAuthenticated = () => {
 export const ProtectedRoute = ({ element }) => {
   return isAuthenticated() ? element : <Navigate to="/auth/login" />;
 };
+
+export const AuthenticatedRoute = ({ element, redirectTo = "/employee" }) => {
+  return isAuthenticated() ? <Navigate to={redirectTo}></Navigate> : element;
+};

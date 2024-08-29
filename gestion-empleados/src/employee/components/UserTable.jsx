@@ -13,23 +13,22 @@ import {
 } from "@mui/material";
 
 const columns = [
-  { id: "firstName", label: "Nombre", minWidth: 10 },
-  { id: "lastName", label: "Apellido", minWidth: 20 },
-  { id: "supervisor", label: "Supervisor", minWidth: 20 },
-  { id: "position", label: "Posición", minWidth: 20 },
+  { id: "name", label: "Nombre", minWidth: 20 },
+  { id: "email", label: "Email", minWidth: 20 },
+  { id: "role", label: "Rol", minWidth: 20 },
   { id: "isDeleted", label: "Status", minWidth: 10 },
   { id: "actions", label: "Acciones", minWidth: 150, align: "center" },
 ];
 
-const EmployeeTable = ({
+const UserTable = ({
   rows,
   page,
   rowsPerPage,
   handleChangePage,
   handleChangeRowsPerPage,
-  onDeleteEmployee,
-  viewEmployeeDetail,
-  onDischargeEmployee,
+  onDeleteUser,
+  viewUserDetail,
+  onDischargeUser,
 }) => {
   return (
     <Paper sx={{ width: "85%" }}>
@@ -52,12 +51,12 @@ const EmployeeTable = ({
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row._id}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.uid}>
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
                       <TableCell
-                        key={`${row._id}-${column.id}`}
+                        key={`${row.uid}-${column.id}`}
                         align={column.align}
                         sx={{
                           color:
@@ -68,8 +67,8 @@ const EmployeeTable = ({
                               : "inherit",
                         }}
                       >
-                        {column.id === "position" ? (
-                          row.position.name
+                        {column.id === "role" ? (
+                          row.role.name
                         ) : column.id === "isDeleted" ? (
                           value ? (
                             "DeBaja"
@@ -86,7 +85,7 @@ const EmployeeTable = ({
                           >
                             {row.isDeleted ? (
                               <Button
-                                onClick={() => onDischargeEmployee(row._id)}
+                                onClick={() => onDischargeUser(row.uid)}
                                 variant="contained"
                                 color="success"
                               >
@@ -94,7 +93,7 @@ const EmployeeTable = ({
                               </Button>
                             ) : (
                               <Button
-                                onClick={() => onDeleteEmployee(row._id)}
+                                onClick={() => onDeleteUser(row.uid)}
                                 variant="contained"
                                 color="error"
                               >
@@ -103,7 +102,7 @@ const EmployeeTable = ({
                             )}
                             <Button
                               variant="contained"
-                              onClick={() => viewEmployeeDetail(row._id)}
+                              onClick={() => viewUserDetail(row.uid)}
                             >
                               Ver más / Editar
                             </Button>
@@ -132,4 +131,4 @@ const EmployeeTable = ({
   );
 };
 
-export default EmployeeTable;
+export default UserTable;

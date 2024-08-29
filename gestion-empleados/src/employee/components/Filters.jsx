@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Grid,
   TextField,
@@ -10,109 +10,116 @@ import {
 } from "@mui/material";
 import { green } from "@mui/material/colors";
 import EmployeeModal from "./EmployeeModal";
-import { useEffect } from "react";
-import axios from "axios";
+import { fetchPositions } from "../../services/positions.service";
 
 const Filters = ({
   handleFilterByName,
-  handleSortBySalary,
+  handleNameSupervisor,
+  handlePosition,
   handleClearFilters,
 }) => {
   const [nameFilter, setNameFilter] = useState("");
-  const [salarySort, setSalarySort] = useState("");
-  const [position, setPosition] = useState([]);
-
-  console.log("hola");
+  const [nameSupervisor, setNameSupervisor] = useState("");
+  const [positionValue, setPositionValue] = useState("");
+  const [positions, setPositions] = useState([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const fetchPositions = async () => {
+    const getPositions = async () => {
       try {
-        const token = localStorage.getItem("authToken");
-        const response = await axios.get(`http://localhost:3000/position`, {
-          headers: {
-            "x-token": token,
-          },
-        });
-        setPosition(response.data.positions);
-        console.log(position + "dasdasdasd");
-        console.log(response);
-      } catch (error) {}
+        const positionsData = await fetchPositions();
+        setPositions(positionsData);
+      } catch (error) {
+        console.error("Error fetching positions:", error);
+      }
     };
-    fetchPositions();
+    getPositions();
   }, []);
 
-  const handleNameChange = (e) => {
-    setNameFilter(e.target.value);
-    handleFilterByName(e.target.value);
-  };
+  const handleNameChange = useCallback(
+    (e) => {
+      setNameFilter(e.target.value);
+      handleFilterByName(e.target.value);
+    },
+    [handleFilterByName]
+  );
 
-  const handleSalaryChange = (e) => {
-    setSalarySort(e.target.value);
-    handleSortBySalary(e.target.value);
-  };
+  const handleNameSupervisorChange = useCallback(
+    (e) => {
+      setNameSupervisor(e.target.value);
+      handleNameSupervisor(e.target.value);
+    },
+    [handleNameSupervisor]
+  );
 
-  const handleClear = () => {
+  const handlePositionChange = useCallback(
+    (e) => {
+      setPositionValue(e.target.value);
+      handlePosition(e.target.value);
+    },
+    [handlePosition]
+  );
+
+  const handleClear = useCallback(() => {
     setNameFilter("");
-    setSalarySort("");
+    setNameSupervisor("");
+    setPositionValue("");
     handleClearFilters();
-  };
+  }, [handleClearFilters]);
 
-  //Modal
-
-  const [open, setOpen] = useState(false);
-  // Función para abrir el modal
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  // Función para cerrar el modal
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClickOpen = useCallback(() => setOpen(true), []);
+  const handleClose = useCallback(() => setOpen(false), []);
 
   return (
     <>
       <Grid
         container
-        spacing={1}
+        spacing={2}
         alignItems="center"
         justifyContent="center"
         marginBottom={2}
-        minWidth={50}
-        sx={{ maxWidth: "100%" }}
+        sx={{
+          maxWidth: "80%",
+          margin: "0 auto",
+          padding: 2,
+          backgroundColor: "#fff",
+          borderRadius: 2,
+          boxShadow: 3,
+        }}
       >
-        <Grid item xs={12} sm={3} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <TextField
             variant="outlined"
             size="small"
-            placeholder="Buscar por nombre "
-            sx={{ width: "100%" }}
+            placeholder="Buscar por nombre"
+            fullWidth
             value={nameFilter}
             onChange={handleNameChange}
           />
         </Grid>
 
-        <Grid item xs={12} sm={3} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <TextField
             variant="outlined"
             size="small"
             placeholder="Nombre Supervisor"
-            sx={{ width: "100%" }}
-            value={nameFilter}
-            onChange={handleNameChange}
+            fullWidth
+            value={nameSupervisor}
+            onChange={handleNameSupervisorChange}
           />
         </Grid>
 
-        <Grid item xs={12} sm={3} md={3}>
-          <FormControl variant="outlined" size="small" sx={{ width: "100%" }}>
-            <InputLabel>Seleccionar posicion</InputLabel>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl variant="outlined" size="small" fullWidth>
+            <InputLabel>Seleccionar posición</InputLabel>
             <Select
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
-              label="Seleccionar Posicion"
+              value={positionValue}
+              onChange={handlePositionChange}
+              label="Seleccionar Posición"
             >
-              {position.map((pos) => (
-                <MenuItem key={pos.id} value={pos.name}>
+              <MenuItem value="">Ninguna</MenuItem>
+              {positions.map((pos) => (
+                <MenuItem key={pos._id} value={pos.name}>
                   {pos.name}
                 </MenuItem>
               ))}
@@ -120,31 +127,38 @@ const Filters = ({
           </FormControl>
         </Grid>
 
-        <Grid item xs={6} sm={3} md={2}>
-          <Button variant="contained" color="secondary" onClick={handleClear}>
-            Limpiar Filtros
-          </Button>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={2}
-          sx={{ textAlign: { xs: "center", sm: "right" } }}
-        >
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: green[500],
-              color: "white",
-              width: { xs: "100%", sm: "auto" },
-            }}
-            onClick={handleClickOpen}
-          >
-            Agregar Empleado
-          </Button>
+        <Grid item xs={12} sm={6} md={3}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={handleClear}
+                sx={{ height: "100%" }}
+              >
+                Limpiar Filtros
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: green[500],
+                  color: "white",
+                  width: "100%",
+                  height: "100%",
+                  textTransform: "none",
+                }}
+                onClick={handleClickOpen}
+              >
+                Agregar Empleado
+              </Button>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
+
       <EmployeeModal open={open} handleClose={handleClose} />
     </>
   );

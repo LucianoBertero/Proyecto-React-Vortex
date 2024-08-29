@@ -1,6 +1,5 @@
-// EmployeeModal.js
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import {
   Dialog,
   DialogActions,
@@ -8,10 +7,17 @@ import {
   DialogTitle,
   TextField,
   Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  FormHelperText,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { fetchPositions } from "../../services/positions.service";
+import { createEmployee } from "../../services/employee.service";
 
 const EmployeeModal = ({ open, handleClose }) => {
   const dispatch = useDispatch();
@@ -20,48 +26,62 @@ const EmployeeModal = ({ open, handleClose }) => {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm();
+  const [positions, setPositions] = useState([]);
 
-  const onSubmit = (data) => {
-    const castEmployee = {
-      FIRST_NAME: data.firstName,
-      LAST_NAME: data.lastName,
-      EMAIL: data.email,
-      PHONE_NUMBER: data.phoneNumber,
-      HIRE_DATE: data.hireDate,
-      SALARY: data.salary,
-      BIRTH_CITY: data.birthCity,
-      DEPARTMENT: data.department,
-      POSITION: data.position,
-      SUPERVISOR: data.supervisor,
+  useEffect(() => {
+    reset();
+  }, [open, reset]);
+
+  useEffect(() => {
+    const getPositions = async () => {
+      try {
+        const positionsData = await fetchPositions();
+        setPositions(positionsData);
+      } catch (error) {
+        console.error("Error al obtener posiciones:", error);
+      }
     };
+    getPositions();
+  }, []);
 
-    dispatch({
-      type: "employees/addEmployee",
-      payload: castEmployee,
-    });
+  const onSubmit = async (data) => {
+    try {
+      const response = await createEmployee(data);
+      if (!response.ok) {
+        handleClose();
+        navigate("/employee/list");
+        Swal.fire({
+          title: "Error",
+          text: response.data.message,
+          icon: "error",
+          confirmButtonText: "Aceptar",
+        });
+        return;
+      }
 
-    handleClose();
-
-    Swal.fire({
-      title: "Empleado agregado",
-      text: "El empleado ha sido agregado con éxito.",
-      icon: "success",
-      confirmButtonText: "Aceptar",
-    }).then(() => {
-      reset(
-        (defaultValues = {
-          salary: 0,
-          phoneNumber: 0,
-          birthCity: "",
-          department: "",
-          position: "",
-          supervisor: "",
-        })
-      );
-      navigate("/employee/list");
-    });
+      handleClose();
+      Swal.fire({
+        title: "Empleado agregado",
+        text: "El empleado ha sido agregado con éxito.",
+        icon: "success",
+        confirmButtonText: "Aceptar",
+      }).then(() => {
+        reset();
+        navigate("/employee/list");
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: error.message || "Ha ocurrido un error al crear el empleado.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+      reset();
+      handleClose();
+    }
   };
 
   const handleCloseAndReset = () => {
@@ -81,9 +101,9 @@ const EmployeeModal = ({ open, handleClose }) => {
             type="text"
             fullWidth
             variant="outlined"
-            {...register("firstName", { required: true })}
+            {...register("firstName", { required: "Nombre es requerido" })}
             error={!!errors.firstName}
-            helperText={errors.firstName ? "Nombre es requerido" : ""}
+            helperText={errors.firstName?.message}
           />
           <TextField
             margin="dense"
@@ -92,9 +112,9 @@ const EmployeeModal = ({ open, handleClose }) => {
             type="text"
             fullWidth
             variant="outlined"
-            {...register("lastName", { required: true })}
+            {...register("lastName", { required: "Apellido es requerido" })}
             error={!!errors.lastName}
-            helperText={errors.lastName ? "Apellido es requerido" : ""}
+            helperText={errors.lastName?.message}
           />
           <TextField
             margin="dense"
@@ -103,22 +123,24 @@ const EmployeeModal = ({ open, handleClose }) => {
             type="email"
             fullWidth
             variant="outlined"
-            {...register("email", { required: true })}
+            {...register("email", {
+              required: "Correo Electrónico es requerido",
+            })}
             error={!!errors.email}
-            helperText={errors.email ? "Correo Electrónico es requerido" : ""}
+            helperText={errors.email?.message}
           />
           <TextField
             margin="dense"
-            id="phoneNumber"
+            id="phone"
             label="Número de Teléfono"
-            type="number"
+            type="tel"
             fullWidth
             variant="outlined"
-            {...register("phoneNumber", { required: true })}
-            error={!!errors.phoneNumber}
-            helperText={
-              errors.phoneNumber ? "Número de Teléfono es requerido" : ""
-            }
+            {...register("phone", {
+              required: "Número de Teléfono es requerido",
+            })}
+            error={!!errors.phone}
+            helperText={errors.phone?.message}
           />
           <TextField
             margin="dense"
@@ -128,11 +150,11 @@ const EmployeeModal = ({ open, handleClose }) => {
             fullWidth
             variant="outlined"
             InputLabelProps={{ shrink: true }}
-            {...register("hireDate", { required: true })}
+            {...register("hireDate", {
+              required: "Fecha de Contratación es requerida",
+            })}
             error={!!errors.hireDate}
-            helperText={
-              errors.hireDate ? "Fecha de Contratación es requerida" : ""
-            }
+            helperText={errors.hireDate?.message}
           />
           <TextField
             margin="dense"
@@ -141,9 +163,9 @@ const EmployeeModal = ({ open, handleClose }) => {
             type="number"
             fullWidth
             variant="outlined"
-            {...register("salary", { required: true })}
+            {...register("salary", { required: "Salario es requerido" })}
             error={!!errors.salary}
-            helperText={errors.salary ? "Salario es requerido" : ""}
+            helperText={errors.salary?.message}
           />
           <TextField
             margin="dense"
@@ -163,14 +185,26 @@ const EmployeeModal = ({ open, handleClose }) => {
             variant="outlined"
             {...register("department")}
           />
-          <TextField
-            margin="dense"
-            id="position"
-            label="Posición"
-            type="text"
-            fullWidth
-            variant="outlined"
-            {...register("position")}
+          <Controller
+            name="position"
+            control={control}
+            rules={{ required: "Posición es requerida" }}
+            render={({ field }) => (
+              <FormControl fullWidth error={!!errors.position} margin="dense">
+                <InputLabel>Seleccionar posición</InputLabel>
+                <Select {...field} label="Seleccionar Posición">
+                  <MenuItem value="">
+                    <em>Ninguna</em>
+                  </MenuItem>
+                  {positions.map((pos) => (
+                    <MenuItem key={pos.id} value={pos.name}>
+                      {pos.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>{errors.position?.message}</FormHelperText>
+              </FormControl>
+            )}
           />
           <TextField
             margin="dense"

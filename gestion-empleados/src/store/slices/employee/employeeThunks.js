@@ -4,13 +4,18 @@ const token = localStorage.getItem("authToken");
 
 export const fetchEmployees = createAsyncThunk(
   "employees/fetchEmployees",
-  async () => {
+  async ({ page = 1, limit = 10 }) => {
     const response = await axios.get("http://localhost:3000/employee", {
       headers: {
-        "x-token": token, // Reemplaza con tu token real
+        "x-token": token,
+      },
+      params: {
+        limit,
+        page,
       },
     });
-    return response.data.employees; // Devuelve solo la lista de empleados
+    console.log(response.data.employees);
+    return response.data.employees;
   }
 );
 
