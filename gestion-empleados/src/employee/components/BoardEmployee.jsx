@@ -184,7 +184,14 @@ export const BoardEmployee = () => {
       <br />
       <br />
       <br />
-
+      <Typography
+        variant="h6"
+        textAlign={"start"}
+        marginBottom={2}
+        marginLeft={4}
+      >
+        Lista de Empleados
+      </Typography>
       <Filters
         handleFilterByName={handleFilterByName}
         handleNameSupervisor={handleNameSupervisor}

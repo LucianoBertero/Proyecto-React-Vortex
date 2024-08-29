@@ -1,11 +1,12 @@
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import { Loader } from "../../ui/components/Loader";
 import { fetchPositionsThunk } from "../../store/slices/position/positionThunks";
 import { PositionsTable } from "../components/PositionsTable";
+import FilterPositions from "../components/FilterPositions";
+import { deletePositions } from "../../services/positions.service";
 
 export const PositionsList = () => {
   const dispatch = useDispatch();
@@ -14,37 +15,83 @@ export const PositionsList = () => {
   const positions = useSelector((state) => state.positions.positions);
   const status = useSelector((state) => state.positions.status);
   const error = useSelector((state) => state.positions.error);
-
+  //   console.log(positions);
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filters, setFilters] = useState({
     name: "",
-    email: "",
   });
+
+  const filterAndSortRows = () => {
+    let filteredRows = [...positions];
+
+    // Filtrado por nombre
+    if (filters.name) {
+      filteredRows = filteredRows.filter((position) =>
+        position.name.toLowerCase().includes(filters.name.toLowerCase())
+      );
+    }
+    console.log(filteredRows);
+
+    setRows(filteredRows);
+  };
 
   useEffect(() => {
     dispatch(fetchPositionsThunk({ page, limit: rowsPerPage }));
-    setRows(positions);
   }, [dispatch, page, rowsPerPage]);
 
-  const onDeletePosition = (user) => {
-    console.log(user);
-    // Swal.fire({
-    //   title: `¿Está seguro que desea eliminar a este usuario?`,
-    //   showCancelButton: true,
-    //   confirmButtonText: "Confirmar",
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     deleteUser(user).then(() => {
-    //       dispatch(fetchUsers({ page, limit: rowsPerPage }));
-    //     });
-    //   }
-    // });
+  useEffect(() => {
+    filterAndSortRows();
+  }, [filters, positions]);
+
+  const handleFilterByName = (name) => {
+    setFilters((prevFilters) => ({ ...prevFilters, name }));
   };
 
-  const viewPositionDetail = (userId) => {
-    navigate(`/employee/users/detail/${userId}`, { replace: true });
+  const onDeletePosition = async (position) => {
+    console.log(position);
+    Swal.fire({
+      title: `¿Está seguro que desea eliminar esta posición?`,
+      showCancelButton: true,
+      confirmButtonText: "Confirmar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const responseDelete = await deletePositions(position);
+
+          console.log(responseDelete);
+          if (!responseDelete.ok) {
+            Swal.fire({
+              title: "Error",
+              text:
+                responseDelete.error.message ||
+                "Ha ocurrido un error al eliminar la posición.",
+              icon: "error",
+              confirmButtonText: "Aceptar",
+            });
+          } else {
+            Swal.fire({
+              title: "Eliminado",
+              text: "La posición ha sido eliminada exitosamente.",
+              icon: "success",
+              confirmButtonText: "Aceptar",
+            }).then(() => {
+              dispatch(fetchPositionsThunk({ page: page, limit: rowsPerPage }));
+            });
+          }
+        } catch (error) {
+          Swal.fire({
+            title: "Error",
+            text: error.message || "Ha ocurrido un error inesperado.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+          });
+        }
+      } else if (result.isDenied) {
+        Swal.fire("No se realizaron cambios", "", "info");
+      }
+    });
   };
 
   const handleChangePage = (event, newPage) => {
@@ -59,7 +106,7 @@ export const PositionsList = () => {
   return (
     <>
       {status === "loading" ? (
-        <Loader> </Loader>
+        <Loader />
       ) : (
         <>
           {status === "failed" && (
@@ -76,7 +123,7 @@ export const PositionsList = () => {
               <br />
               <br />
               <br />
-              No hay usuarios registrados
+              No hay posiciones registradas
             </Typography>
           )}
 
@@ -89,17 +136,10 @@ export const PositionsList = () => {
                   marginBottom={2}
                   marginLeft={4}
                 >
-                  Lista de Usuarios
+                  Lista de Posiciones
                 </Typography>
-                {/* <UserFilters
-                  handleFilterByName={(value) =>
-                    setFilters((prev) => ({ ...prev, name: value }))
-                  }
-                  handleFilterByEmail={(value) =>
-                    setFilters((prev) => ({ ...prev, email: value }))
-                  }
-                  handleClearFilters={() => setFilters({ name: "", email: "" })}
-                />{" "} */}
+                {/* Añade los filtros aquí */}
+                <FilterPositions handleFilterByName={handleFilterByName} />
               </div>
               <div style={{ marginTop: "-70px" }}>
                 <Box
@@ -116,7 +156,6 @@ export const PositionsList = () => {
                     handleChangePage={handleChangePage}
                     handleChangeRowsPerPage={handleChangeRowsPerPage}
                     onDeletePosition={onDeletePosition}
-                    viewPositionDetail={viewPositionDetail}
                   />
                 </Box>
               </div>

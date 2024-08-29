@@ -1,46 +1,55 @@
-.container {
-  /* Ajusta el padding según sea necesario */
-}
-.border-radius {
-  border: 100px solid red;
-}
-
-/*======================
-    404 page
-=======================*/
-
+/* Contenedor principal para la página 404 */
 .page_404 {
-  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Ocupa toda la altura de la ventana */
   background: #fff;
   font-family: "Arvo", serif;
 }
 
-.page_404 img {
-  width: 100%;
-}
-
+/* Estilo para la imagen de fondo */
 .four_zero_four_bg {
   background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
-  height: 400px;
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
   background-position: center;
-  text-align: center;
+  background-size: contain; /* Ajusta la imagen para que se muestre completa sin deformarse */
+  height: 400px;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
 }
 
+/* Tamaño del texto para el código de error */
 .four_zero_four_bg h1 {
   font-size: 80px;
+  margin: 0;
+  color: black;
+  margin-top: 20rem;
 }
 
-.four_zero_four_bg h3 {
-  font-size: 80px;
-}
-
-.link_404 {
-  color: #fff !important;
-  padding: 10px 20px;
-  background: #543884;
-  margin: 20px 0;
-}
+/* Estilo del contenedor de contenido */
 .contant_box_404 {
-  margin-top: -50px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Tamaño del texto para el mensaje de error */
+.contant_box_404 h3 {
+  font-size: 24px;
+  margin: 10px 0;
+}
+
+/* Espaciado del contenido del mensaje de error */
+.contant_box_404 p {
+  margin: 10px 0;
+}
+
+/* Estilo del botón de volver */
+.contant_box_404 button {
+  margin-top: 20px;
 }

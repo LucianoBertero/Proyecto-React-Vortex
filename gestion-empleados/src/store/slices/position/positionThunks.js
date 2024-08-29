@@ -5,7 +5,7 @@ import axios from "axios";
 const token = localStorage.getItem("authToken");
 
 export const fetchPositionsThunk = createAsyncThunk(
-  "users/fetchUsers",
+  "positions/fetchUsers",
   async ({ page = 1, limit = 10 }) => {
     const response = await axios.get("http://localhost:3000/position", {
       headers: {

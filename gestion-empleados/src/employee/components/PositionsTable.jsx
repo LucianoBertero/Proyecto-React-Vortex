@@ -17,18 +17,16 @@ const columns = [
   { id: "actions", label: "Acciones", minWidth: 150, align: "center" },
 ];
 
-export const PositionsTable = (
+export const PositionsTable = ({
   rows,
   page,
   rowsPerPage,
   handleChangePage,
   handleChangeRowsPerPage,
   onDeletePosition,
-  viewPositionDetail
-) => {
-  console.log(rows);
+}) => {
   return (
-    <Paper sx={{ width: "85%" }}>
+    <Paper sx={{ maxWidth: "100%" }}>
       <TableContainer sx={{ maxHeight: "100%" }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -49,27 +47,21 @@ export const PositionsTable = (
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row._id}>
-                  <TableCell>{row.name}</TableCell>
+                  <TableCell align="center"> {row.name}</TableCell>
                   <TableCell align="center">
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "center",
+                        justifyContent: "center ",
                         gap: 2,
                       }}
                     >
                       <Button
                         variant="contained"
                         color="error"
-                        onClick={() => onDeletePosition(row.uid)}
+                        onClick={() => onDeletePosition(row.name)}
                       >
                         Eliminar
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={() => viewPositionDetail(row.uid)}
-                      >
-                        Editar
                       </Button>
                     </Box>
                   </TableCell>

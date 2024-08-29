@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { fetchPositionsThunk } from "./positionThunks";
 
 export const positionsSlice = createSlice({
-  name: "users",
+  name: "positions",
   initialState: {
     positions: [],
     status: "idle",

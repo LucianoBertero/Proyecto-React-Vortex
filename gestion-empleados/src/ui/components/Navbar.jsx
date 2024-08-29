@@ -13,8 +13,8 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
-
-const settings = ["Perfil", "Salir", "Usuarios", "Posiciones"];
+import { useEffect } from "react";
+const settings = ["Usuarios", "Posiciones", "Empleados", "Salir"];
 
 export const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -34,8 +34,10 @@ export const Navbar = () => {
       navigate("/employee/users");
     }
     if (setting === "Posiciones") {
-      localStorage.removeItem("authToken");
       navigate("/employee/positions");
+    }
+    if (setting === "Empleados") {
+      navigate("/employee/list");
     }
   };
   const navigate = useNavigate();
