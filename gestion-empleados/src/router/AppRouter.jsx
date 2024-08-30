@@ -6,6 +6,7 @@ import {
   AuthenticatedRoute,
   ProtectedRoute,
 } from "../components/ProtectedRoute";
+import RecoverPassword from "../auth/pages/RecoverPassword";
 
 export const AppRouter = () => {
   return (
@@ -18,6 +19,12 @@ export const AppRouter = () => {
         path="/auth/login"
         element={<AuthenticatedRoute element={<LoginPage />} />}
       />
+
+      <Route
+        path="/recoverPass/:token"
+        element={<RecoverPassword></RecoverPassword>}
+      ></Route>
+
       <Route path="/*" element={<Error404 />} />
     </Routes>
   );

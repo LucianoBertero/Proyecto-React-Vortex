@@ -28,14 +28,12 @@ export const UserList = () => {
   const filterAndSortRows = () => {
     let filteredRows = [...users];
 
-    // Filtrado por nombre
     if (filters.name) {
       filteredRows = filteredRows.filter((user) =>
         user.name.toLowerCase().includes(filters.name.toLowerCase())
       );
     }
 
-    // Filtrado por email
     if (filters.email) {
       filteredRows = filteredRows.filter((user) =>
         user.email.toLowerCase().includes(filters.email.toLowerCase())

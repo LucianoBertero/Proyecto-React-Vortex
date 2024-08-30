@@ -71,8 +71,6 @@ export const BoardEmployee = () => {
     setRows(filteredRows);
   };
 
-  //carga inicial
-
   if (status === "loading") {
     return (
       <Box

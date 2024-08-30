@@ -35,11 +35,11 @@ const Logo = () => {
           display: "inline-block",
           backgroundColor: "white",
           height: "20px",
-          width: "20px", // Igualar altura y anchura
-          borderRadius: "50%", // Borde redondeado para un círculo perfecto
+          width: "20px",
+          borderRadius: "50%",
           visibility: showDot ? "visible" : "hidden",
           marginLeft: "10px",
-          marginTop: "60px", // Espacio entre la imagen y el círculo
+          marginTop: "60px",
         }}
       ></span>
     </div>

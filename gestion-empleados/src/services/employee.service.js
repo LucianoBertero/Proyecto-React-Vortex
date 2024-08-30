@@ -5,7 +5,7 @@ const API_URL = "http://localhost:3000";
 
 export const deleteEmployee = async (employeeId) => {
   try {
-    const token = localStorage.getItem("authToken");
+    let token = localStorage.getItem("authToken");
     const response = await axios.delete(`${API_URL}/employee/${employeeId}`, {
       headers: { "x-token": token },
     });
@@ -18,7 +18,7 @@ export const deleteEmployee = async (employeeId) => {
 export const dischargeEmployee = async (employeeId) => {
   try {
     console.log(employeeId);
-    const token = localStorage.getItem("authToken");
+    let token = localStorage.getItem("authToken");
     console.log(token);
     const response = await axios.put(
       `${API_URL}/employee/${employeeId}`,
@@ -36,8 +36,7 @@ export const dischargeEmployee = async (employeeId) => {
 
 export const createEmployee = async (employeeData) => {
   try {
-    console.log(employeeData);
-    const token = localStorage.getItem("authToken");
+    let token = localStorage.getItem("authToken");
     const response = await axios.post(
       `${API_URL}/employee/createEmployee`,
       employeeData,

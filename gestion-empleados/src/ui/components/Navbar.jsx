@@ -6,18 +6,38 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 
-import { Link } from "@mui/material";
+import { Link, responsiveFontSizes } from "@mui/material";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-const settings = ["Usuarios", "Posiciones", "Empleados", "Salir"];
+import { useEffect, useState } from "react";
+import getUserRol from "../../services/helper.service";
+// const settings = ["Usuarios", "Posiciones", "Empleados", "Salir"];
 
 export const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [settings, setSettings] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getRole = async () => {
+      try {
+        const responseRole = await getUserRol();
+        console.log(responseRole.role.name);
+        if (responseRole.role.name === "admin") {
+          setSettings(["Usuarios", "Posiciones", "Empleados", "Salir"]);
+        } else {
+          setSettings(["Empleados", "Posiciones", "Salir"]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getRole();
+  }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -40,7 +60,6 @@ export const Navbar = () => {
       navigate("/employee/list");
     }
   };
-  const navigate = useNavigate();
 
   const handleClick = () => {
     navigate("/employee/list");

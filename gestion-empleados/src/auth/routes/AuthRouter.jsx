@@ -6,6 +6,7 @@ export const EmployeeRoutes = () => {
     <>
       <Routes>
         <Route path="login" element={<LoginPage />} />
+
         <Route
           path="/*"
           element={<Navigate to="/login/login "></Navigate>}

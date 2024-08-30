@@ -1,8 +1,14 @@
 import axios from "axios";
 
-const endpoint = async (token) => {
+const API_URL = "http://localhost:3000";
+
+const getUserRol = async () => {
+  let token = localStorage.getItem("authToken");
   try {
-    const response = await axios.post("/token", { token });
+    const response = await axios.post(`${API_URL}/auth/checkpermissions`, {
+      token: token,
+    });
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -10,4 +16,4 @@ const endpoint = async (token) => {
   }
 };
 
-export default endpoint;
+export default getUserRol;

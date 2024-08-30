@@ -26,13 +26,11 @@ export const PositionsList = () => {
   const filterAndSortRows = () => {
     let filteredRows = [...positions];
 
-    // Filtrado por nombre
     if (filters.name) {
       filteredRows = filteredRows.filter((position) =>
         position.name.toLowerCase().includes(filters.name.toLowerCase())
       );
     }
-    console.log(filteredRows);
 
     setRows(filteredRows);
   };
@@ -42,6 +40,7 @@ export const PositionsList = () => {
   }, [dispatch, page, rowsPerPage]);
 
   useEffect(() => {
+    console.log("se renderizo");
     filterAndSortRows();
   }, [filters, positions]);
 

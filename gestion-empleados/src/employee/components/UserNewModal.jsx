@@ -18,6 +18,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { fetchRole } from "../../services/role.service";
 import { registerUser } from "../../services/user.service";
+import { fetchUsers } from "../../store/slices/user/userThunks";
 
 export const UserNewModal = ({ open, handleClose }) => {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export const UserNewModal = ({ open, handleClose }) => {
 
   useEffect(() => {
     if (open) {
-      reset(); // Resetear el formulario solo cuando el modal se abre
+      reset();
     }
   }, [open, reset]);
 
@@ -53,10 +54,6 @@ export const UserNewModal = ({ open, handleClose }) => {
 
   const onSubmit = async (data) => {
     try {
-      // Lógica para crear el empleado
-
-      console.log(data);
-
       const registerUserResponse = await registerUser({ data });
 
       if (registerUserResponse.ok === false) {
@@ -78,7 +75,7 @@ export const UserNewModal = ({ open, handleClose }) => {
         confirmButtonText: "Aceptar",
       }).then(() => {
         reset();
-        navigate("/employee/users");
+        dispatch(fetchUsers({ page: 1, limit: 10 }));
       });
     } catch (error) {
       Swal.fire({

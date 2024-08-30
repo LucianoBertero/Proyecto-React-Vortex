@@ -18,6 +18,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { fetchPositions } from "../../services/positions.service";
 import { createEmployee } from "../../services/employee.service";
+import { fetchEmployees } from "../../store/slices/employee/employeeThunks";
 
 const EmployeeModal = ({ open, handleClose }) => {
   const dispatch = useDispatch();
@@ -70,7 +71,7 @@ const EmployeeModal = ({ open, handleClose }) => {
         confirmButtonText: "Aceptar",
       }).then(() => {
         reset();
-        navigate("/employee/list");
+        dispatch(fetchEmployees({ page: 1, limit: 10 }));
       });
     } catch (error) {
       Swal.fire({
