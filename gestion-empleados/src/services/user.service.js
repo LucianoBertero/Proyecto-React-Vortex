@@ -1,13 +1,10 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:3000";
-let token = localStorage.getItem("authToken");
+import axiosInstance from "../api/axiosConfig";
 
 export const login = async (employeeId) => {
   try {
-    let token = localStorage.getItem("authToken");
-    const response = await axios.get(`${API_URL}/employee/${employeeId}`, {
-      headers: { "x-token": token },
+    const token = localStorage.getItem("authToken");
+    const response = await axiosInstance.get(`/employee/${employeeId}`, {
+      headers: token ? { "x-token": token } : {},
     });
     return response.data;
   } catch (error) {
@@ -17,11 +14,9 @@ export const login = async (employeeId) => {
 
 export const deleteUser = async (userId) => {
   try {
-    let token = localStorage.getItem("authToken");
-    const response = await axios.delete(`${API_URL}/users/${userId}`, {
-      headers: {
-        "x-token": token,
-      },
+    const token = localStorage.getItem("authToken");
+    const response = await axiosInstance.delete(`/users/${userId}`, {
+      headers: token ? { "x-token": token } : {},
     });
     console.log(response.data);
     return response.data;
@@ -32,12 +27,12 @@ export const deleteUser = async (userId) => {
 
 export const dischargeUser = async (userId) => {
   try {
-    let token = localStorage.getItem("authToken");
-    const response = await axios.put(
-      `${API_URL}/users/restore/${userId}`,
+    const token = localStorage.getItem("authToken");
+    const response = await axiosInstance.put(
+      `/users/restore/${userId}`,
       {},
       {
-        headers: { "x-token": token },
+        headers: token ? { "x-token": token } : {},
       }
     );
     return response.data;
@@ -49,8 +44,8 @@ export const dischargeUser = async (userId) => {
 export const updateUser = async ({ userId, data }) => {
   try {
     let token = localStorage.getItem("authToken");
-    const response = await axios.put(`${API_URL}/users/${userId}`, data, {
-      headers: { "x-token": token },
+    const response = await axiosInstance.put(`/users/${userId}`, data, {
+      headers: token ? { "x-token": token } : {},
     });
     return response.data;
   } catch (error) {
@@ -60,14 +55,27 @@ export const updateUser = async ({ userId, data }) => {
 
 export const registerUser = async ({ data }) => {
   try {
-    let token = localStorage.getItem("authToken");
-    const response = await axios.post(`${API_URL}/auth/register`, data, {
-      headers: {
-        "x-token": token,
-      },
+    const token = localStorage.getItem("authToken");
+    const response = await axiosInstance.post(`/auth/register`, data, {
+      headers: token ? { "x-token": token } : {},
     });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Error en la solicitud");
+  }
+};
+export const fetchUserById = async (id) => {
+  try {
+    let token = localStorage.getItem("authToken");
+    const response = await axiosInstance.get(`/users/${id}`, {
+      headers: {
+        "x-token": token,
+      },
+    });
+    return response.data.user;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Error al obtener el usuario"
+    );
   }
 };

@@ -27,7 +27,7 @@ const FilterPositions = ({ handleFilterByName }) => {
     <>
       <Box
         sx={{
-          maxWidth: "60%",
+          maxWidth: "900px",
           margin: "0 auto",
           padding: 2,
           backgroundColor: "#fff",

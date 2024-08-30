@@ -40,7 +40,6 @@ export const PositionsList = () => {
   }, [dispatch, page, rowsPerPage]);
 
   useEffect(() => {
-    console.log("se renderizo");
     filterAndSortRows();
   }, [filters, positions]);
 
@@ -49,7 +48,6 @@ export const PositionsList = () => {
   };
 
   const onDeletePosition = async (position) => {
-    console.log(position);
     Swal.fire({
       title: `¿Está seguro que desea eliminar esta posición?`,
       showCancelButton: true,

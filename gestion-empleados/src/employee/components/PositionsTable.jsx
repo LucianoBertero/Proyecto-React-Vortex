@@ -14,6 +14,7 @@ import {
 
 const columns = [
   { id: "name", label: "Nombre", minWidth: 20 },
+  { id: "description", label: "Descripción", minWidth: 200, align: "center" },
   { id: "actions", label: "Acciones", minWidth: 150, align: "center" },
 ];
 
@@ -47,12 +48,16 @@ export const PositionsTable = ({
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row._id}>
-                  <TableCell align="center"> {row.name}</TableCell>
+                  <TableCell align="center">{row.name}</TableCell>
+                  <TableCell align="center">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Voluptatibus sit fugit aperiam fugiat
+                  </TableCell>
                   <TableCell align="center">
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "center ",
+                        justifyContent: "center",
                         gap: 2,
                       }}
                     >

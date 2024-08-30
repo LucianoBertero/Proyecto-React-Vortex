@@ -23,6 +23,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { updateEmployeeById } from "../../store/slices/employee/employeesSlice";
 import { useState } from "react";
+import {
+  fetchEmployeeById,
+  updateEmployee,
+} from "../../services/employee.service";
 
 export const EmployeeDetail = () => {
   const [loading, setLoading] = useState(true);
@@ -43,17 +47,7 @@ export const EmployeeDetail = () => {
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        const token = localStorage.getItem("authToken"); // Reemplaza esto con tu lógica para obtener el token
-        const response = await axios.get(
-          `http://localhost:3000/employee/${id}`,
-          {
-            headers: {
-              "x-token": token,
-            },
-          }
-        );
-        const employeeData = response.data.employee; // Asegúrate de que la respuesta tenga la estructura correcta
-        // Establecer los valores en el formulario
+        const employeeData = await fetchEmployeeById(id);
         setValue("firstName", employeeData.firstName);
         setValue("id", employeeData._id);
         setValue("lastName", employeeData.lastName);
@@ -69,7 +63,7 @@ export const EmployeeDetail = () => {
         console.error("Error al obtener el empleado:", error);
         navigate("/employee/list", { replace: true });
       } finally {
-        setLoading(false); // Cambiar el estado de carga a false
+        setLoading(false);
       }
     };
 
@@ -80,28 +74,13 @@ export const EmployeeDetail = () => {
     if (Object.keys(formState.dirtyFields).length === 0) {
     } else {
       Swal.fire({
-        title: `¿Está seguro que desea modificar a ${employee.FIRST_NAME} ${employee.LAST_NAME}?`,
+        title: `¿Está seguro que desea modificar a este empleado?`,
         showCancelButton: true,
         confirmButtonText: "Confirmar",
       }).then(async (result) => {
-        // Cambiado a async
         if (result.isConfirmed) {
-          const token = localStorage.getItem("authToken"); // Obtener el token
-
-          console.log(data.id);
-          console.log(data);
-          //castear el objeto
-
           try {
-            await axios.put(
-              `http://localhost:3000/employee/updateEmployee/${data.id}`,
-              data,
-              {
-                headers: {
-                  "x-token": token,
-                },
-              }
-            );
+            await updateEmployee(data.id, data);
 
             Swal.fire("Modificado!", "", "success");
             navigate("/employee/list");
@@ -176,10 +155,6 @@ export const EmployeeDetail = () => {
             }}
           >
             <CardContent sx={{ width: "100%" }}>
-              {/* <form onSubmit={handleSubmit(onSubmit)}>
-              <form onSubmit={handleSubmit(onSubmit)}>
-               */}
-
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={6}>
@@ -215,7 +190,7 @@ export const EmployeeDetail = () => {
                     <Controller
                       name="lastName"
                       control={control}
-                      rules={{ required: "El apellido es obligatorio" }} // Regla de validación
+                      rules={{ required: "El apellido es obligatorio" }}
                       render={({ field, fieldState }) => (
                         <TextField
                           {...field}
@@ -288,7 +263,7 @@ export const EmployeeDetail = () => {
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          type="date" // Cambiado a type date
+                          type="date"
                           variant="outlined"
                           size="small"
                           placeholder="Editar fecha de contratación"

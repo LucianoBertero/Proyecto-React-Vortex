@@ -15,7 +15,6 @@ import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import getUserRol from "../../services/helper.service";
-// const settings = ["Usuarios", "Posiciones", "Empleados", "Salir"];
 
 export const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -26,7 +25,6 @@ export const Navbar = () => {
     const getRole = async () => {
       try {
         const responseRole = await getUserRol();
-        console.log(responseRole.role.name);
         if (responseRole.role.name === "admin") {
           setSettings(["Usuarios", "Posiciones", "Empleados", "Salir"]);
         } else {

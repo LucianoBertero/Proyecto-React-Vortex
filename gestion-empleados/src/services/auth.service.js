@@ -1,11 +1,8 @@
-// services/authService.js
-import axios from "axios";
-
-const API_URL = "http://localhost:3000";
+import axiosInstance from "../api/axiosConfig";
 
 export const login = async (email, password) => {
   try {
-    const response = await axios.get(`${API_URL}/auth/login`, {
+    const response = await axiosInstance.get("/auth/login", {
       params: { email, password },
     });
     return response.data;
@@ -16,7 +13,7 @@ export const login = async (email, password) => {
 
 export const sendRecoveryEmail = async (email) => {
   try {
-    const response = await axios.post(`${API_URL}/recover-pass`, { email });
+    const response = await axiosInstance.post("/recover-pass", { email });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Error en la solicitud");
@@ -25,7 +22,7 @@ export const sendRecoveryEmail = async (email) => {
 
 export const recoverPass = async (token, password) => {
   try {
-    const response = await axios.post(`${API_URL}/recover-pass/${token}`, {
+    const response = await axiosInstance.post(`/recover-pass/${token}`, {
       password,
     });
     return response.data;

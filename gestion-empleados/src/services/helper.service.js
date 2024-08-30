@@ -1,18 +1,17 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:3000";
+import axiosInstance from "../api/axiosConfig";
 
 const getUserRol = async () => {
   let token = localStorage.getItem("authToken");
   try {
-    const response = await axios.post(`${API_URL}/auth/checkpermissions`, {
-      token: token,
+    const response = await axiosInstance.post("/auth/checkpermissions", {
+      token, // Si la clave y el valor son iguales, puedes usar solo el nombre
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error(error);
-    return "Error al consumir el token";
+    // Devuelve un mensaje más informativo en caso de error
+    throw new Error(
+      error.response?.data?.message || "Error al consumir el token"
+    );
   }
 };
 

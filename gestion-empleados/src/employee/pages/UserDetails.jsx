@@ -19,7 +19,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { fetchRole } from "../../services/role.service";
-import { updateUser } from "../../services/user.service";
+import { fetchUserById, updateUser } from "../../services/user.service";
 import { Loader } from "../../ui/components/Loader";
 
 export const UserDetails = () => {
@@ -40,15 +40,7 @@ export const UserDetails = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("authToken");
-        const response = await axios.get(`http://localhost:3000/users/${id}`, {
-          headers: {
-            "x-token": token,
-          },
-        });
-
-        const userData = response.data.user;
-
+        const userData = await fetchUserById(id);
         setUser(userData);
         setUserRole(userData.role.name);
 
@@ -79,11 +71,22 @@ export const UserDetails = () => {
 
   const onSubmit = async (data) => {
     if (!user) {
-      console.error("El usuario no está definido");
+      Swal.fire({
+        title: "Error",
+        text: "El usuario no está definido.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
       return;
     }
+
     if (!data.firstName || !data.email || !data.role) {
-      Swal.fire("Error!", "Todos los campos son obligatorios.", "error");
+      Swal.fire({
+        title: "Error",
+        text: "Todos los campos son obligatorios.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
       return;
     }
 
@@ -106,37 +109,58 @@ export const UserDetails = () => {
     }
     if (data.password) {
       if (data.password.length < 6) {
-        console.error("La contraseña debe tener al menos 6 caracteres");
+        Swal.fire({
+          title: "Error",
+          text: "La contraseña debe tener al menos 6 caracteres.",
+          icon: "error",
+          confirmButtonText: "Aceptar",
+        });
         return;
       }
       changedData.password = data.password;
     }
 
     if (Object.keys(changedData).length > 0) {
-      console.log(changedData);
       try {
-        console.log(user);
-        await updateUser({
+        const response = await updateUser({
           userId: user.uid,
           data: changedData,
         });
-        Swal.fire(
-          "Modificado!",
-          "Los datos del usuario han sido actualizados.",
-          "success"
-        ).then(() => {
+
+        if (response.ok === false) {
+          Swal.fire({
+            title: "Error",
+            text: response.error.message || "No se pudo modificar el usuario.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+          });
+          return;
+        }
+
+        Swal.fire({
+          title: "Modificado",
+          text: "Los datos del usuario han sido actualizados.",
+          icon: "success",
+          confirmButtonText: "Aceptar",
+        }).then(() => {
           navigate("/employee/users");
         });
       } catch (error) {
-        console.error("Error al modificar el usuario:", error);
-        Swal.fire("Error!", "No se pudo modificar el usuario.", "error");
+        Swal.fire({
+          title: "Error",
+          text:
+            error.message || "Ha ocurrido un error al modificar el usuario.",
+          icon: "error",
+          confirmButtonText: "Aceptar",
+        });
       }
     } else {
-      Swal.fire(
-        "No hay cambios",
-        "No se realizaron cambios en los datos.",
-        "info"
-      );
+      Swal.fire({
+        title: "No hay cambios",
+        text: "No se realizaron cambios en los datos.",
+        icon: "info",
+        confirmButtonText: "Aceptar",
+      });
     }
   };
 

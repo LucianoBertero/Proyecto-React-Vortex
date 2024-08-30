@@ -1,13 +1,10 @@
-// services/authService.js
-import axios from "axios";
-
-const API_URL = "http://localhost:3000";
+import axiosInstance from "../api/axiosConfig";
 
 export const deleteEmployee = async (employeeId) => {
   try {
     let token = localStorage.getItem("authToken");
-    const response = await axios.delete(`${API_URL}/employee/${employeeId}`, {
-      headers: { "x-token": token },
+    const response = await axiosInstance.delete(`/employee/${employeeId}`, {
+      headers: token ? { "x-token": token } : {},
     });
     return response.data;
   } catch (error) {
@@ -17,15 +14,12 @@ export const deleteEmployee = async (employeeId) => {
 
 export const dischargeEmployee = async (employeeId) => {
   try {
-    console.log(employeeId);
     let token = localStorage.getItem("authToken");
-    console.log(token);
-    const response = await axios.put(
-      `${API_URL}/employee/${employeeId}`,
+    const response = await axiosInstance.put(
+      `/employee/${employeeId}`,
       {},
       {
-        // Cambiado aquí
-        headers: { "x-token": token },
+        headers: token ? { "x-token": token } : {},
       }
     );
     return response.data;
@@ -37,16 +31,51 @@ export const dischargeEmployee = async (employeeId) => {
 export const createEmployee = async (employeeData) => {
   try {
     let token = localStorage.getItem("authToken");
-    const response = await axios.post(
-      `${API_URL}/employee/createEmployee`,
+    const response = await axiosInstance.post(
+      "/employee/createEmployee",
       employeeData,
       {
-        headers: { "x-token": token },
+        headers: token ? { "x-token": token } : {},
       }
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error(error.response?.data?.message || "Error en la solicitud");
+  }
+};
+
+export const fetchEmployeeById = async (id) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axiosInstance.get(`/employee/${id}`, {
+      headers: {
+        "x-token": token,
+      },
+    });
+    return response.data.employee;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Error al obtener el empleado"
+    );
+  }
+};
+
+export const updateEmployee = async (employeeId, employeeData) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axiosInstance.put(
+      `/employee/updateEmployee/${employeeId}`,
+      employeeData,
+      {
+        headers: {
+          "x-token": token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Error al actualizar el empleado"
+    );
   }
 };
